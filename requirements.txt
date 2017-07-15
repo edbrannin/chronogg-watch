@@ -1,2 +1,3 @@
 # pushbullet-cli
 https://github.com/edbrannin/pushbullet-cli/archive/read-stdin-if-pipe.zip
+json_delta
