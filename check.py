@@ -13,7 +13,10 @@ def read_cache(name):
         return json.load(in_file)
 
 new, old = read_cache('result.json'), read_cache('result-old.json')
-diff = json_delta.diff(new, old, minimal=True)
+if new == old:
+    sys.exit(0)
+
+diff = json_delta.diff(new, old, minimal=True, verbose=False)
 
 udiff = json_delta.udiff(new, old, patch=diff, indent=2)
 
