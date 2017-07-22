@@ -1,20 +1,19 @@
-#!/bin/bash -x
+#!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export CACHE_DIR=$DIR/cache
 
 function notify {
+  [ -d _env ] || virtualenv _env
+  . _env/bin/activate
+  pip install -r requirements.txt
+
   (
-    echo "< Old | New >"
     cat $CACHE_DIR/diff.txt
   ) > $CACHE_DIR/message.txt
   cat $CACHE_DIR/message.txt
   cat $CACHE_DIR/message.txt | pb push -t "Chrono Shop Update" -u https://chrono.gg/shop 
 }
-
-[ -d _env ] || virtualenv _env
-. _env/bin/activate
-pip install -r requirements.txt
 
 [ -d $CACHE_DIR ] || mkdir $CACHE_DIR
 

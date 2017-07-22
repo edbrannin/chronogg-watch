@@ -2,7 +2,6 @@ import sys
 import os
 import json
 
-import json_delta
 # import pushbullet_cli
 # import requests
 
@@ -12,18 +11,43 @@ def read_cache(name):
     with open(os.path.join(CACHE_DIR, name)) as in_file:
         return json.load(in_file)
 
-new, old = read_cache('result.json'), read_cache('result-old.json')
-if new == old:
-    sys.exit(0)
+def check_json(old_json, new_json):
+    return check(json.load(old_json), json.load(new_json))
 
-diff = json_delta.diff(new, old, minimal=True, verbose=False)
+def check_jsons(old_json, new_json):
+    return check(json.loads(old_json), json.loads(new_json))
 
-udiff = json_delta.udiff(new, old, patch=diff, indent=2)
+def check(old, new):
+    old_by_url, new_by_url = map(lambda items : { item['url'] : item for item in items if item['url'] }, (old, new))
+    new_urls, old_urls = set(new_by_url.keys()), set(old_by_url.keys())
+    added_urls = new_urls - old_urls
+    removed_urls = old_urls - new_urls
+    return (
+            [new_by_url[x] for x in added_urls] + [item for item in new if item['status'] == 'preview'],
+            [old_by_url[x] for x in removed_urls],
+            )
 
-for line in udiff:
-    print line
+def main():
+    added, removed = check(read_cache('result-old.json'), read_cache('result.json'))
+    total = len(added) + len(removed)
 
-if udiff:
-    sys.exit(1)
-else:
-    sys.exit(0)
+    if total == 0:
+        sys.exit(0)
+
+    if added:
+        print "Added:"
+        for item in added:
+            print json.dumps(item, indent=2)
+        print
+
+
+    if removed:
+        print "Removed:"
+        for item in removed:
+            print json.dumps(item, indent=2)
+        print
+
+    sys.exit(total)
+
+if __name__ == '__main__':
+    main()
