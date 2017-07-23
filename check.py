@@ -34,10 +34,13 @@ def main():
     if total == 0:
         sys.exit(0)
 
+    title = 'Chrono Store: '
+
     if added:
         print "Added:"
         for item in added:
             print json.dumps(item, indent=2)
+        title += "+{} ".format(len(added))
         print
 
 
@@ -45,7 +48,11 @@ def main():
         print "Removed:"
         for item in removed:
             print json.dumps(item, indent=2)
+        title += "-{} ".format(len(removed))
         print
+
+    with open('cache/title.txt', 'w') as out:
+        out.write(title.strip())
 
     sys.exit(total)
 

@@ -11,8 +11,12 @@ function notify {
   (
     cat $CACHE_DIR/diff.txt
   ) > $CACHE_DIR/message.txt
+  TITLE="$(cat $CACHE_DIR/title.txt || echo Chrono Shop Update)"
+  echo "============"
+  echo $TITLE
   cat $CACHE_DIR/message.txt
-  cat $CACHE_DIR/message.txt | pb push -t "Chrono Shop Update" -u https://chrono.gg/shop 
+  echo "============"
+  cat $CACHE_DIR/message.txt | pb push -t "${TITLE}" -u https://chrono.gg/shop 
 }
 
 [ -d $CACHE_DIR ] || mkdir $CACHE_DIR
