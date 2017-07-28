@@ -22,9 +22,13 @@ def check(old, new):
     new_urls, old_urls = set(new_by_url.keys()), set(old_by_url.keys())
     added_urls = new_urls - old_urls
     removed_urls = old_urls - new_urls
+
+    current_previews = set([tuple(item.items()) for item in new if item['status'] == 'preview'])
+    old_previews = set([tuple(item.items()) for item in old if item['status'] == 'preview'])
+
     return (
-            [new_by_url[x] for x in added_urls] + [item for item in new if item['status'] == 'preview'],
-            [old_by_url[x] for x in removed_urls],
+            [new_by_url[x] for x in added_urls] + [dict(item) for item in list(current_previews - old_previews)],
+            [old_by_url[x] for x in removed_urls] + [dict(item) for item in list(old_previews - current_previews)],
             )
 
 def main():
